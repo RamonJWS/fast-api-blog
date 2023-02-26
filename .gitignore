@@ -1,2 +1,7 @@
 .idea/
 __pycache__/
+
+files/*
+!files/.gitkeep
+
+venv
