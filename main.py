@@ -1,56 +1,42 @@
 import shutil
 import uvicorn
+import os
 
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, UploadFile, Depends
 from fastapi.responses import FileResponse
+from sqlalchemy.orm import Session
 
 from schemas import BlogPost
-
+from db.database import get_db, engine
+from db import db_blogs
+from db import models
 
 app = FastAPI()
 
+models.Base.metadata.create_all(engine)
 fake_db = []
 
 @app.post("/post")
-def create_blog_test(blog: BlogPost):
-
-    if not fake_db:
-        blog_id = 0
-    else:
-        blog_id = fake_db[-1]["blog_id"] + 1
-
-    fake_db.append({"user_name": blog.user_name,
-                    "title": blog.title,
-                    "content": blog.content,
-                    "blog_id": blog_id})
-
-    return {
-        "blog": blog
-    }
+def create_blog_test(blog: BlogPost, db: Session = Depends(get_db)):
+    return db_blogs.create_blog(db, blog)
 
 
 @app.post("/post/image", response_class=FileResponse)
-def add_image(upload_file: UploadFile = File(...)):
-    path = f"files/{upload_file.filename}"
+def add_image(id: int, upload_file: UploadFile = File(...)):
+    path = os.path.join("files", str(id) + "_" + upload_file.filename)
     with open(path, "w+b") as file:
         shutil.copyfileobj(upload_file.file, file)
-
     return path
 
 
 @app.get("/post/all")
-def get_all_blogs():
-    return {
-        "data": fake_db
-    }
+def get_all_blogs(db: Session = Depends(get_db)):
+    return db_blogs.return_all_blogs(db)
 
 
 @app.delete("/post/{id}")
-def delete_post(id: int):
-    fake_db.pop(id)
-    return {
-        "data": fake_db
-    }
+def delete_post(id: int, db: Session = Depends(get_db)):
+    return db_blogs.remove_blog(id, db)
 
 
 if __name__ == "__main__":

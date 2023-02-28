@@ -5,3 +5,4 @@ files/*
 !files/.gitkeep
 
 venv
+blog.db
