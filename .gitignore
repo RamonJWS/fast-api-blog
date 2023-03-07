@@ -3,6 +3,7 @@ __pycache__/
 
 files/*
 !files/.gitkeep
+!files/no_image.png
 
 venv
 blog.db
