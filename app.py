@@ -11,7 +11,7 @@ def get_all_blogs():
         st.image(blog['image_url'])
         st.markdown(f"**Content**: {blog['content']}")
         st.markdown(f"**UserID**: {blog['id']}")
-        st.markdown(f"**Username**: {blog['username']}")
+        st.markdown(f"**Usernameeee**: {blog['username']}")
 
 
 st.button('Get all blogs', on_click=get_all_blogs)
