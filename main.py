@@ -19,18 +19,6 @@ app.mount('/files', StaticFiles(directory='files'), name='files')
 
 models.Base.metadata.create_all(engine)
 
-# frontend port (needed as frontend and backend are on same machine)
-# origins = [
-#     'http://localhost:3000'
-# ]
-#
-# app.add_middleware(
-#     CORSMiddleware,
-#     allow_origins=origins,
-#     low_credentials=True,
-#     allow_methods=['*'],
-#     allow_headers=['*']
-# )
 
 @app.post("/post")
 def create_blog_test(request: BlogPost, db: Session = Depends(get_db)):
