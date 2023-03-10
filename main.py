@@ -5,10 +5,10 @@ import os
 from fastapi import FastAPI, File, UploadFile, Depends
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from fastapi.middleware.cors import CORSMiddleware
 from sqlalchemy.orm import Session
 from typing import List
 
+from settings import API_HOST, API_PORT
 from schemas import BlogPost, DisplayBlogPost
 from db.database import get_db, engine
 from db import db_blogs
@@ -53,4 +53,4 @@ def delete_post(id: int, db: Session = Depends(get_db)):
 
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=8000)
+    uvicorn.run(app, host=API_HOST, port=API_PORT)
