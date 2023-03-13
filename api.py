@@ -44,7 +44,7 @@ def get_all_blogs(db: Session = Depends(get_db)):
 @app.delete("/post/{id}")
 def delete_post(id: int, db: Session = Depends(get_db)):
 
-    # TODO need to be able to delete image also.
+    # remove post image
     image_urls = db_blogs.return_all_image_urls(db)
     for url, post_id in image_urls:
         if url:

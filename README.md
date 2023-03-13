@@ -58,3 +58,10 @@ Make sure python is installed.
 
 The backend will create a local db called blog.db, this is a sqlite database which can be viewed with
 TablePlus if needed.
+
+## Improvements:
+
+- Add in authentication and user roles.
+- Only allow users who created blogs to delete their own blogs.
+- Add in comments and voting system.
+- Deploy to AWS. Ideally S3 bucket for static website and EC2 for backend.
