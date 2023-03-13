@@ -2,8 +2,7 @@ import shutil
 import uvicorn
 import os
 
-from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, status
-from fastapi.responses import FileResponse
+from fastapi import FastAPI, File, UploadFile, Depends
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
 from typing import List
@@ -46,6 +45,15 @@ def get_all_blogs(db: Session = Depends(get_db)):
 def delete_post(id: int, db: Session = Depends(get_db)):
 
     # TODO need to be able to delete image also.
+    image_urls = db_blogs.return_all_image_urls(db)
+    for url, post_id in image_urls:
+        if url:
+            if post_id == id:
+                path = "/".join(url.split("/")[-2:])
+                try:
+                    os.remove(path)
+                except FileNotFoundError:
+                    pass
 
     return db_blogs.remove_blog(id, db)
 

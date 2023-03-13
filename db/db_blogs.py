@@ -24,6 +24,9 @@ def return_all_blogs(db: Session):
     return db.query(DbBlog).all()
 
 
+def return_all_image_urls(db: Session):
+    return db.query(DbBlog).with_entities(DbBlog.image_url, DbBlog.id).all()
+
 def remove_blog(id: int, db: Session):
     blog = db.query(DbBlog).filter(DbBlog.id == id).first()
     if not blog:
