@@ -1,6 +1,6 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Union
 
 
 class BlogPost(BaseModel):
@@ -9,9 +9,10 @@ class BlogPost(BaseModel):
     title: str
     content: str
 
+
 class DisplayBlogPost(BaseModel):
     id: int
-    image_url: str
+    image_url: Union[str, None]
     username: str
     title: str
     content: str

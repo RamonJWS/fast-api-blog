@@ -2,7 +2,7 @@ import shutil
 import uvicorn
 import os
 
-from fastapi import FastAPI, File, UploadFile, Depends
+from fastapi import FastAPI, File, UploadFile, Depends, HTTPException, status
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 from sqlalchemy.orm import Session
@@ -25,20 +25,15 @@ def create_blog_test(request: BlogPost, db: Session = Depends(get_db)):
     return db_blogs.create_blog(db, request)
 
 
-@app.post("/post/image", response_class=FileResponse)
-def add_image(id: int, upload_file: UploadFile = File(...)):
-    path = os.path.join("files", str(id) + "_" + upload_file.filename)
-
-    # check image exists for id, if so remove it.
-    files_start_with_id = [file for file in os.listdir("files") if file.startswith(str(id))]
-    if files_start_with_id:
-        for file in files_start_with_id:
-            os.remove(os.path.join('files', file))
+@app.post("/post/image")
+def add_image(title: str, upload_file: UploadFile = File(...)):
+    file_name = title + "_" + upload_file.filename
+    path = os.path.join("files", file_name)
 
     # save image locally
-
     with open(path, "w+b") as file:
         shutil.copyfileobj(upload_file.file, file)
+
     return path
 
 
@@ -49,6 +44,9 @@ def get_all_blogs(db: Session = Depends(get_db)):
 
 @app.delete("/post/{id}")
 def delete_post(id: int, db: Session = Depends(get_db)):
+
+    # TODO need to be able to delete image also.
+
     return db_blogs.remove_blog(id, db)
 
 

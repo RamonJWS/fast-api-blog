@@ -7,13 +7,14 @@ from typing import Dict
 
 def get_all_blogs():
     response = requests.get('http://127.0.0.1:8000/post/all')
-    data = json.loads(response.text)
+    blog_data = json.loads(response.text)
 
-    for blog in data:
+    for blog in blog_data:
         st.title(blog['title'])
-        st.image(blog['image_url'])
+        if blog['image_url']:
+            st.image(blog['image_url'])
         st.markdown(f"**Content**: {blog['content']}")
-        st.markdown(f"**UserID**: {blog['id']}")
+        st.markdown(f"**Post ID**: {blog['id']}")
         st.markdown(f"**Username**: {blog['username']}")
 
 
@@ -25,28 +26,59 @@ def create_new_blog(request_body: Dict) -> None:
         pass
 
 
-def add_image_to_blog():
-    pass
+def add_image_to_blog(title: str, img) -> str:
+    query_params = {"title": title}
+    files = {"upload_file": img}
+    response = requests.post('http://127.0.0.1:8000/post/image', params=query_params, files=files)
+
+    if response.ok:
+        return response.text.replace('"', '')
+
+
+def delete_post(id: int) -> None:
+    response = requests.delete(f'http://127.0.0.1:8000/post/{id}')
+
+    if response.ok:
+        pass
 
 
 with st.form("Add new Blog"):
     st.write("Add Post")
     input_username = st.text_input(label="Username")
     input_title = st.text_input(label="Title")
-    input_image = st.file_uploader("Image", type=['png', 'jpg'])
+    input_image = st.file_uploader("Image", type=['png', 'jpeg'])
     input_content = st.text_input(label="Content")
     submitted = st.form_submit_button("Post")
 
-    if input_image is not None:
-        st.empty().image(input_image)
+    if submitted:
+        if input_image is not None:
+            response_body = add_image_to_blog(input_title, input_image)
+
+            data = {
+                "user_name": input_username,
+                "title": input_title,
+                "content": input_content,
+                "image_url": "http://127.0.0.1:8000/" + response_body
+            }
+
+        else:
+            data = {
+                "user_name": input_username,
+                "title": input_title,
+                "content": input_content
+            }
+
+        create_new_blog(data)
+        st.write(f'Posted: {submitted}')
+
+with st.form("Delete Post"):
+    st.write("Delete a Post")
+    delete_id = st.text_input(label="Post ID")
+    submitted = st.form_submit_button("Delete!")
 
     if submitted:
-        st.write(f'Posted: {submitted}')
-        data = {
-            "user_name": input_username,
-            "title": input_title,
-            "content": input_content
-        }
-        create_new_blog(data)
+        delete_post(int(delete_id))
+        st.write(f"Post {delete_id} deleted")
+
 
 st.button('Get all blogs', on_click=get_all_blogs)
