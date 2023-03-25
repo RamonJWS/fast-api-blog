@@ -1,5 +1,5 @@
-from backend.db.models import DbBlog
-from backend.schemas import BlogPost
+from db.models import DbBlog
+from schemas import BlogPost
 
 from sqlalchemy.orm.session import Session
 from fastapi import HTTPException, status

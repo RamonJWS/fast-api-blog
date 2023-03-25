@@ -9,8 +9,8 @@ from typing import List
 
 from settings import API_HOST, API_PORT
 from schemas import BlogPost, DisplayBlogPost
-from backend.db.database import get_db, engine
-from backend.db import db_blogs, models
+from db.database import get_db, engine
+from db import db_blogs, models
 
 app = FastAPI()
 app.mount('/files', StaticFiles(directory='files'), name='files')
