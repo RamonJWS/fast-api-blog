@@ -1,0 +1,16 @@
+services:
+  app:
+    build: ./frontend
+    volumes:
+      - ./frontend:/app
+    ports:
+      - 8081:8501
+
+  api:
+    build: ./backend
+    volumes:
+      - ./backend:/app
+    ports:
+      - 8080:80
+    depends_on:
+      - app

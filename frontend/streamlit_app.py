@@ -6,7 +6,7 @@ from typing import Dict
 
 
 def get_all_blogs():
-    response = requests.get('http://127.0.0.1:8000/post/all')
+    response = requests.get('http://fast-api-blog-api-1/post/all')
     blog_data = json.loads(response.text)
 
     for blog in blog_data:
@@ -20,7 +20,7 @@ def get_all_blogs():
 
 def create_new_blog(request_body: Dict) -> None:
     json_body = json.dumps(request_body, indent=4)
-    response = requests.post('http://127.0.0.1:8000/post', data=json_body)
+    response = requests.post('http://fast-api-blog-api-1/post', data=json_body)
 
     if response.ok:
         pass
@@ -29,14 +29,14 @@ def create_new_blog(request_body: Dict) -> None:
 def add_image_to_blog(title: str, img) -> str:
     query_params = {"title": title}
     files = {"upload_file": img}
-    response = requests.post('http://127.0.0.1:8000/post/image', params=query_params, files=files)
+    response = requests.post('http://fast-api-blog-api-1/post/image', params=query_params, files=files)
 
     if response.ok:
         return response.text.replace('"', '')
 
 
 def delete_post(id: int) -> None:
-    response = requests.delete(f'http://127.0.0.1:8000/post/{id}')
+    response = requests.delete(f'http://fast-api-blog-api-1/post/{id}')
 
     if response.ok:
         pass
@@ -63,7 +63,7 @@ with post:
                     "user_name": input_username,
                     "title": input_title,
                     "content": input_content,
-                    "image_url": "http://127.0.0.1:8000/" + response_body
+                    "image_url": "http://localhost:8080/" + response_body
                 }
 
             else:

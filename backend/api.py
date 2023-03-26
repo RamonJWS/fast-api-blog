@@ -25,7 +25,7 @@ def create_blog_test(request: BlogPost, db: Session = Depends(get_db)):
 
 @app.post("/post/image")
 def add_image(title: str, upload_file: UploadFile = File(...)):
-    file_name = title + "_" + upload_file.filename
+    file_name = title.replace(" ", "_") + "_" + upload_file.filename.replace(" ", "_")
     path = os.path.join("files", file_name)
 
     # save image locally
