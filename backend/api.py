@@ -10,8 +10,7 @@ from typing import List
 from settings import API_HOST, API_PORT
 from schemas import BlogPost, DisplayBlogPost
 from db.database import get_db, engine
-from db import db_blogs
-from db import models
+from db import db_blogs, models
 
 app = FastAPI()
 app.mount('/files', StaticFiles(directory='files'), name='files')
@@ -26,7 +25,7 @@ def create_blog_test(request: BlogPost, db: Session = Depends(get_db)):
 
 @app.post("/post/image")
 def add_image(title: str, upload_file: UploadFile = File(...)):
-    file_name = title + "_" + upload_file.filename
+    file_name = title.replace(" ", "_") + "_" + upload_file.filename.replace(" ", "_")
     path = os.path.join("files", file_name)
 
     # save image locally

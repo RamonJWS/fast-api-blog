@@ -2,9 +2,11 @@
 .DS_Store
 __pycache__/
 
-files/*
-!files/.gitkeep
-!files/no_image.png
+backend/files/*
+!backend/files/.gitkeep
+!backend/files/no_image.png
 
 venv
-blog.db
+backend/blog.db
+
+.env
