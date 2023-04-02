@@ -8,3 +8,5 @@ backend/files/*
 
 venv
 backend/blog.db
+
+.env
