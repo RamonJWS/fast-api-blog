@@ -1,3 +1,5 @@
+[![Automated Testing](https://github.com/RamonJWS/fast-api-blog/actions/workflows/run-tests.yml/badge.svg)](https://github.com/RamonJWS/fast-api-blog/actions/workflows/run-tests.yml)
+
 # About
 **Tech Stack**: Python, FastAPI, EC2, Docker, Streamlit, SqlAlchemy, Sqlite.
 
