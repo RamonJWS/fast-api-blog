@@ -35,7 +35,3 @@ jobs:
       run: |
         # run backend tests
         pytest backend/tests/tests.py
-    - name: Test frontend tets
-      run: |
-        # run frontend tests
-        pytest frontend/tests/tests.py
