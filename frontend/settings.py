@@ -1,1 +1,1 @@
-URL = "fast-api-blog-api-1"
+URL = "localhost:8000"
