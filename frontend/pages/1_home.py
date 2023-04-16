@@ -15,7 +15,7 @@ IP = os.getenv("LOCAL_IP")
 
 
 def get_all_blogs():
-    response = requests.get('http://' + URL + '/post/all')
+    response = requests.get('http://' + URL + '/post/all', headers=state.header)
     blog_data = json.loads(response.text)
 
     for blog in blog_data:
@@ -27,32 +27,31 @@ def get_all_blogs():
         st.markdown(f"**Username**: {blog['username']}")
 
 
-def create_new_blog(request_body: Dict) -> None:
+def create_new_blog(request_body: Dict) -> int:
     json_body = json.dumps(request_body, indent=4)
-    response = requests.post('http://' + URL + '/post', data=json_body)
+    response = requests.post('http://' + URL + '/post', data=json_body, headers=state.header)
 
-    if response.ok:
-        pass
+    return response.status_code
 
 
 def add_image_to_blog(title: str, img) -> str:
     query_params = {"title": title}
     files = {"upload_file": img}
-    response = requests.post('http://' + URL + '/post/image', params=query_params, files=files)
+    response = requests.post('http://' + URL + '/post/image', params=query_params, files=files, headers=state.header)
 
     if response.ok:
         return response.text.replace('"', '')
 
 
 def delete_post(id: int) -> bool:
-    response = requests.delete(f'http://' + URL + f'/post/{id}')
+    response = requests.delete(f'http://' + URL + f'/post/{id}', headers=state.header)
 
     if response.status_code == 200:
         return True
 
 
 # user needs to have logged in before accessing the following resources
-if 'is_logged_in' in state:
+if 'header' in state:
 
     # Create tabs
     tabs = ["Home Page", "Create Post", "Delete Post"]
@@ -85,8 +84,11 @@ if 'is_logged_in' in state:
                         "content": input_content
                     }
 
-                create_new_blog(data)
-                st.write(f'Posted: {submitted}')
+                status = create_new_blog(data)
+                if status == 200:
+                    st.write(f'Posted: {submitted}')
+                elif status == 401:
+                    st.write(f'Error unauthorized request')
 
     with delete:
         with st.form("Delete Post"):

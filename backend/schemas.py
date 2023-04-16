@@ -12,7 +12,7 @@ class BlogPost(BaseModel):
 
 class DisplayBlogPost(BaseModel):
     id: int
-    image_url: Union[str, None]
+    image_url: str | None
     username: str
     title: str
     content: str

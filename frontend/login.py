@@ -5,6 +5,7 @@ from settings import URL
 
 from streamlit import session_state as state
 
+
 def authentication_header(username: str, password: str) -> dict | None:
     """
     return the authorization bearer from the header if successful authentication
@@ -35,7 +36,7 @@ with st.form("Login"):
     if submit_login:
         header = authentication_header(existing_username, existing_password)
         if header:
-            state.is_logged_in = True
+            state.header = header
             st.write('**Logged in, you can now access the home page**')
         else:
             st.write('**Login Failed, incorrect username and or password**')
