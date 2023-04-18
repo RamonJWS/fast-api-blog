@@ -11,8 +11,6 @@ The site can be found here: http://ec2-13-53-56-159.eu-north-1.compute.amazonaws
 
 (note: this site will not remain active as it could be used for inappropriate content.)
 
-![Alt Text](readme_files/demo.gif)
-
 ## Overview
 
 **Home Page**
@@ -57,7 +55,7 @@ TablePlus if needed.
 
 ## Improvements:
 
-- Add in async await for concurrent jobs.
 - Add in user accounts and authentication.
 - Only allow creator or admin of blog to delete blog post.
-- Add in inappropriate image and text classifier to remove explicit content.
+- Change from sqlite to MySql -> better security, allows for multiple connections at once, better user roles.
+- Add in text and image classification for unwanted content.
