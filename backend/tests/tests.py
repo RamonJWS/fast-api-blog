@@ -11,10 +11,9 @@ from db.models import DbBlog
 
 automatic_fields = ['timestamp', 'id', 'image_url']
 files_dir = os.path.join(ROOT, 'files')
-
 client = TestClient(app)
-
 user = FakeUser("a", "a")
+
 
 def get_header():
     response = client.post("http://localhost:8000/token",
@@ -25,6 +24,7 @@ def get_header():
     if response.status_code == 200:
         access_token = response.json()["access_token"]
         return {"Authorization": f"Bearer {access_token}"}
+
 
 @pytest.fixture
 def delete_all_data():
@@ -45,11 +45,14 @@ def delete_all_data():
             if file != '.gitkeep':
                 os.remove(os.path.join(files_dir, file))
 
+
 @pytest.fixture
 def fake_data():
     response = client.post('/post', json={"user_name": "test name",
                                           "title": "test title",
                                           "content": "test content"})
+
+
 def test_authentication(delete_all_data):
     """
     Authenticate fake user and check they can access a restricted endpoint
@@ -61,6 +64,7 @@ def test_authentication(delete_all_data):
                                    "password": user.password})
 
     assert response.status_code == 200
+
 
 def test_authenticated_user_access(delete_all_data):
 
@@ -82,6 +86,7 @@ def test_get_all_blogs(delete_all_data):
     assert response.status_code == 200
     assert response.json() == []
 
+
 def test_create_post_without_image(delete_all_data):
     response = client.post('/post',
                            json={"user_name": "test name",
@@ -95,6 +100,7 @@ def test_create_post_without_image(delete_all_data):
     assert testable_response == {"username": "test name",
                                  "title": "test title",
                                  "content": "test content"}
+
 
 def test_delete_post_without_image(fake_data):
 
@@ -129,4 +135,3 @@ def test_create_post_with_image(delete_all_data):
                                  "title": "test title",
                                  "content": "test content",
                                  "image_url": "http://localhost:8000/files/test_api.png"}
-
