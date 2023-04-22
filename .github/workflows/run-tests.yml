@@ -17,11 +17,6 @@ jobs:
       HASHED_SECRET_KEY: ${{ secrets.HASHED_SECRET_KEY }}
 
     steps:
-    - uses: actions/checkout@v3
-    - name: Set up secret keys
-      run: |
-        echo ${{ secrets.HASHED_SECRET_KEY }} | sed 's/./& /g'
-        echo "export HASHED_SECRET_KEY=${{ secrets.HASHED_SECRET_KEY }}" >> $GITHUB_ENV
     - name: Set up Python 3.11
       uses: actions/setup-python@v3
       with:
