@@ -37,3 +37,6 @@ jobs:
       run: |
         # run backend tests
         pytest backend/tests/tests.py
+    - name: Check test status
+      if: ${{ failure() }}
+      run: exit 1
