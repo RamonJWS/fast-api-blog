@@ -69,6 +69,7 @@ def test_authentication(delete_all_data):
 
 
 def test_authenticated_user_access(delete_all_data):
+    print(HASH_SECRET_KEY)
     response = client.get("http://localhost:8000/users/me", headers=get_header())
     assert response.status_code == 200
 
