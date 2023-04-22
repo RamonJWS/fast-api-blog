@@ -4,7 +4,7 @@ import os
 from fastapi.testclient import TestClient
 
 from .test_utils import FakeUser
-from settings import ROOT, PROJECT_DIR, HASH_SECRET_KEY
+from settings import ROOT, PROJECT_DIR
 from api import app
 from db.database import SessionLocal
 from db.models import DbBlog
@@ -59,7 +59,6 @@ def test_authentication(delete_all_data):
     Authenticate fake user and check they can access a restricted endpoint
     """
 
-    print(HASH_SECRET_KEY)
     response = client.post("http://localhost:8000/token",
                              data={"grant_type": "password",
                                    "username": user.username,
@@ -69,7 +68,6 @@ def test_authentication(delete_all_data):
 
 
 def test_authenticated_user_access(delete_all_data):
-    print(HASH_SECRET_KEY)
     response = client.get("http://localhost:8000/users/me", headers=get_header())
     assert response.status_code == 200
 
