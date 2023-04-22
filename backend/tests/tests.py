@@ -54,6 +54,10 @@ def fake_data():
                            headers=get_header())
 
 
+def test_secret_keys():
+    assert os.environ.get("JWT_SECRET_KEY") != None
+
+
 def test_authentication(delete_all_data):
     """
     Authenticate fake user and check they can access a restricted endpoint

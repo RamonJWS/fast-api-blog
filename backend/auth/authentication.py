@@ -6,7 +6,7 @@ from jose import JWTError, jwt
 
 from schemas import UserInDB, User, TokenData
 from auth.password import verify_password, create_access_token
-from settings import ACCESS_TOKEN_EXPIRE_MINUTES, HASH_SECRET_KEY, ALGORITHM
+from settings import ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SECRET_KEY, ALGORITHM
 
 
 router = APIRouter(
@@ -39,7 +39,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         headers={"WWW-Authenticate": "Bearer"},
     )
     try:
-        payload = jwt.decode(token, HASH_SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
         username: str = payload.get("sub")
         if username is None:
             raise credentials_exception
