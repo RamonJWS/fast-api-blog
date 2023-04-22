@@ -14,7 +14,7 @@ files_dir = os.path.join(ROOT, 'files')
 client = TestClient(app)
 user = FakeUser("a", "a")
 
-
+# TODO tests failing because it doesn't have the hashed secret key in .env...
 def get_header():
     response = client.post("http://localhost:8000/token",
                            data={"grant_type": "password",
