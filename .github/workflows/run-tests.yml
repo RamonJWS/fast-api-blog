@@ -14,7 +14,7 @@ jobs:
 
     runs-on: ubuntu-latest
     env:
-      MY_SECRET: ${{ secrets.HASHED_SECRET_KEY }}
+      HASHED_SECRET_KEY: ${{ secrets.HASHED_SECRET_KEY }}
 
     steps:
     - uses: actions/checkout@v3
