@@ -14,7 +14,7 @@ files_dir = os.path.join(ROOT, 'files')
 client = TestClient(app)
 user = FakeUser("a", "a")
 
-# TODO tests failing because it doesn't have the hashed secret key in .env...
+
 def get_header():
     response = client.post("http://localhost:8000/token",
                            data={"grant_type": "password",
@@ -50,7 +50,8 @@ def delete_all_data():
 def fake_data():
     response = client.post('/post', json={"user_name": "test name",
                                           "title": "test title",
-                                          "content": "test content"})
+                                          "content": "test content"},
+                           headers=get_header())
 
 
 def test_authentication(delete_all_data):
@@ -67,17 +68,7 @@ def test_authentication(delete_all_data):
 
 
 def test_authenticated_user_access(delete_all_data):
-
-    response = client.post("http://localhost:8000/token",
-                           data={"grant_type": "password",
-                                 "username": user.username,
-                                 "password": user.password})
-
-    if response.status_code == 200:
-        access_token = response.json()["access_token"]
-        headers = {"Authorization": f"Bearer {access_token}"}
-        response = client.get("http://localhost:8000/users/me", headers=headers)
-
+    response = client.get("http://localhost:8000/users/me", headers=get_header())
     assert response.status_code == 200
 
 
