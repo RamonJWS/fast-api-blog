@@ -35,5 +35,6 @@ jobs:
       env:
         JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       run: |
+        echo "JWT_SECRET_KEY: [$JWT_SECRET_KEY]"
         # run backend tests
         pytest backend/tests/tests.py
