@@ -36,6 +36,6 @@ jobs:
         JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
       run: |
         echo "JWT_SECRET_KEY: [$JWT_SECRET_KEY]"
-        echo ${{ secrets.$JWT_SECRET_KEY }} | sed 's/./& /g'
+        echo ${{ secrets.JWT_SECRET_KEY }} | sed 's/./& /g'
         # run backend tests
         pytest backend/tests/tests.py
