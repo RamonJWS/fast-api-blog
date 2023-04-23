@@ -55,9 +55,7 @@ def fake_data():
 
 
 def test_secret_keys():
-    key = os.environ.get("JWT_SECRET_KEY")
-    print(key)
-    assert key is not None
+    assert os.environ.get("JWT_SECRET_KEY") == "92b0904361abcda72bca2f755fa38a48d180beaabf8a3e3c9877832158812272"
 
 
 def test_authentication(delete_all_data):
