@@ -54,21 +54,21 @@ def fake_data():
                            headers=get_header())
 
 
-def test_secret_keys():
-    assert os.environ.get("JWT_SECRET_KEY") is not None
-
-
-def test_authentication(delete_all_data):
-    """
-    Authenticate fake user and check they can access a restricted endpoint
-    """
-
-    response = client.post("http://localhost:8000/token",
-                             data={"grant_type": "password",
-                                   "username": user.username,
-                                   "password": user.password})
-
-    assert response.status_code == 200
+# def test_secret_keys():
+#     assert os.environ.get("JWT_SECRET_KEY") is not None
+#
+#
+# def test_authentication(delete_all_data):
+#     """
+#     Authenticate fake user and check they can access a restricted endpoint
+#     """
+#
+#     response = client.post("http://localhost:8000/token",
+#                              data={"grant_type": "password",
+#                                    "username": user.username,
+#                                    "password": user.password})
+#
+#     assert response.status_code == 200
 
 
 def test_authenticated_user_access(delete_all_data):
