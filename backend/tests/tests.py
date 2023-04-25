@@ -107,13 +107,13 @@ def test_delete_post_without_image(fake_data):
 def test_create_image(delete_all_data):
 
     with open(os.path.join(PROJECT_DIR,'readme_files/api.png'), 'rb') as f:
+
         response = client.post('/post/image',
-                               files={'file': ("filename", f, "image/png")},
+                               files={'upload_file': ("api.png", f, "image/png")},
                                params={"title": "test title"},
                                headers=get_header())
 
-    # TODO this should return 200 not 422
-    assert response.status_code == 422
+    assert response.status_code == 200
 
 
 def test_create_post_with_image(delete_all_data):
