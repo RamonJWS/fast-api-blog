@@ -9,6 +9,7 @@ from auth.authentication import get_current_active_user
 from schemas import BlogPost, DisplayBlogPost, User
 from db.database import get_db
 from db import db_blogs
+from settings import ROOT
 
 
 router = APIRouter(
@@ -28,7 +29,7 @@ def add_image(title: str,
               upload_file: UploadFile = File(...),
               current_user: User = Depends(get_current_active_user)):
     file_name = title.replace(" ", "_") + "_" + upload_file.filename.replace(" ", "_")
-    path = os.path.join("files", file_name)
+    path = os.path.join(ROOT, "files", file_name)
 
     # save image locally
     with open(path, "w+b") as file:
