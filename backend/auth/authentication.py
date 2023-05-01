@@ -3,10 +3,13 @@ from datetime import timedelta
 from fastapi import Depends, HTTPException, status, APIRouter
 from fastapi.security import OAuth2PasswordRequestForm, OAuth2PasswordBearer
 from jose import JWTError, jwt
+from sqlalchemy.orm import Session
 
-from schemas import UserInDB, User, TokenData
+from schemas import User, TokenData
 from auth.password import verify_password, create_access_token
 from settings import ACCESS_TOKEN_EXPIRE_MINUTES, JWT_SECRET_KEY, ALGORITHM
+from db.database import get_db
+from db import db_users
 
 
 router = APIRouter(
@@ -15,24 +18,8 @@ router = APIRouter(
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-fake_users_db = {
-    "a": {
-        "username": "a",
-        "full_name": "John Doe",
-        "email": "johndoe@example.com",
-        "hashed_password": "$2b$12$b2WWI5KyjamefJyDiyL/BO4QEvxb24/qLPxB6R7OeMUA0Ttjgmp/u",
-        "disabled": False,
-    }
-}
 
-
-def get_user(db, username: str):
-    if username in db:
-        user_dict = db[username]
-        return UserInDB(**user_dict)
-
-
-async def get_current_user(token: str = Depends(oauth2_scheme)):
+async def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(get_db)):
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="Could not validate credentials",
@@ -46,7 +33,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)):
         token_data = TokenData(username=username)
     except JWTError:
         raise credentials_exception
-    user = get_user(fake_users_db, username=token_data.username)
+    user = db_users.get_user(db, token_data.username)
     if user is None:
         raise credentials_exception
     return user
@@ -58,24 +45,24 @@ async def get_current_active_user(current_user: User = Depends(get_current_user)
     return current_user
 
 
-def authenticate_user(fake_db, username: str, password: str):
-    user = get_user(fake_db, username)
-    if not user:
+def authenticate_user(user_db, password: str):
+    if not user_db:
         return False
-    if not verify_password(password, user.hashed_password):
+    if not verify_password(password, user_db.password):
         return False
-    return user
+    return user_db
 
 
 @router.post("/token")
-async def login(form_data: OAuth2PasswordRequestForm = Depends()):
-    user = authenticate_user(fake_users_db, form_data.username, form_data.password)
-    if not user:
+async def login(form_data: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)):
+    user_from_db = db_users.get_user(db, form_data.username)
+    auth_user = authenticate_user(user_from_db, form_data.password)
+    if not auth_user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
-    access_token = create_access_token(data={"sub": user.username}, expires_delta=access_token_expires)
+    access_token = create_access_token(data={"sub": auth_user.username}, expires_delta=access_token_expires)
     return {"access_token": access_token, "token_type": "bearer"}

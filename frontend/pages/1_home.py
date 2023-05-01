@@ -22,9 +22,9 @@ def get_all_blogs():
         st.title(blog['title'])
         if blog['image_url']:
             st.image(blog['image_url'])
-        st.markdown(f"**Content**: {blog['content']}")
-        st.markdown(f"**Post ID**: {blog['id']}")
-        st.markdown(f"**Username**: {blog['username']}")
+        st.markdown(f"{blog['content']}")
+        st.markdown(f"Post ID: **{blog['id']}**")
+        st.markdown(f"Username: **{blog['username']}**")
 
 
 def create_new_blog(request_body: Dict) -> int:
@@ -60,7 +60,6 @@ if 'header' in state:
     with post:
         with st.form("Add new Blog"):
             st.write("Add Post")
-            input_username = st.text_input(label="Username")
             input_title = st.text_input(label="Title")
             input_image = st.file_uploader("Image", type=['png', 'jpeg'])
             input_content = st.text_input(label="Content")
@@ -71,7 +70,6 @@ if 'header' in state:
                     response_body = add_image_to_blog(input_title, input_image)
 
                     data = {
-                        "user_name": input_username,
                         "title": input_title,
                         "content": input_content,
                         "image_url": "http://" + URL + "/" + response_body
@@ -79,7 +77,6 @@ if 'header' in state:
 
                 else:
                     data = {
-                        "user_name": input_username,
                         "title": input_title,
                         "content": input_content
                     }
@@ -97,10 +94,19 @@ if 'header' in state:
             submitted = st.form_submit_button("Delete!")
 
             if submitted:
-                if delete_post(int(delete_id)):
-                    st.write(f"Post with ID {delete_id} deleted")
-                else:
-                    st.write(f"Failed to delete post with ID: {delete_id}")
+                try:
+                    if delete_post(int(delete_id)):
+                        st.write(f"Post with ID {delete_id} deleted")
+                    else:
+                        st.write("Failed to delete post:")
+                        st.write("You're either not the creator of the post or the ID doesn't match any of your posts")
+                except ValueError:
+                    st.write("Invalid entry, make sure the ID is a number.")
+
+
+
+
+
 
     with home:
         get_all_blogs()

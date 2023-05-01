@@ -1,10 +1,9 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional, Union
+from typing import Optional
 
 
 class BlogPost(BaseModel):
-    user_name: str
     image_url: Optional[str]
     title: str
     content: str
@@ -17,7 +16,6 @@ class DisplayBlogPost(BaseModel):
     title: str
     content: str
     timestamp: datetime
-
     class Config:
         orm_mode = True
 
@@ -32,6 +30,18 @@ class User(BaseModel):
 class UserInDB(User):
     hashed_password: str
 
+
+class NewUser(BaseModel):
+    username: str
+    email: str
+    password: str
+
+
+class ResponseUser(BaseModel):
+    username: str
+    email: str
+    class Config:
+        orm_mode = True
 
 class Token(BaseModel):
     access_token: str

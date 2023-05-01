@@ -2,17 +2,18 @@ import pytest
 import os
 
 from fastapi.testclient import TestClient
+from typing import List
 
 from .test_utils import FakeUser
 from settings import ROOT, PROJECT_DIR
 from api import app
 from db.database import SessionLocal
-from db.models import DbBlog
+from db.models import DbBlog, DbUser
 
 automatic_fields = ['timestamp', 'id', 'image_url']
 files_dir = os.path.join(ROOT, 'files')
 client = TestClient(app)
-user = FakeUser("a", "a")
+user = FakeUser("a", "a@gmail.com", "a")
 
 
 def get_header():
@@ -27,14 +28,18 @@ def get_header():
 
 
 @pytest.fixture
-def delete_all_data():
+def delete_data(request):
     """
-    This fixture runs on all tests apart from delete. This allows delete to be run on its own as well as with all tests.
+    used to delete all data from the blogs and or users table
     """
 
-    # clean db
+    table = [i for i in request.param]
+
     session = SessionLocal()
-    session.query(DbBlog).delete()
+    if 'blogs' in table:
+        session.query(DbBlog).delete()
+    if 'users' in table:
+        session.query(DbUser).delete()
     session.commit()
     session.close()
 
@@ -48,17 +53,26 @@ def delete_all_data():
 
 @pytest.fixture
 def fake_data():
-    response = client.post('/post', json={"user_name": "test name",
-                                          "title": "test title",
-                                          "content": "test content"},
-                           headers=get_header())
+    client.post('/post',
+                json={"title": "test title", "content": "test content"},
+                headers=get_header())
 
 
 def test_secret_keys():
     assert os.environ.get("JWT_SECRET_KEY").strip() is not None
 
 
-def test_authentication(delete_all_data):
+@pytest.mark.parametrize("delete_data", [("users", "blogs")], indirect=True)
+def test_create_user(delete_data):
+    response = client.post('/users/create_account', json={"username": user.username,
+                                                          "email": user.email,
+                                                          "password": user.password})
+
+    assert response.status_code == 200
+
+
+@pytest.mark.parametrize("delete_data", [("blogs",)], indirect=True)
+def test_authentication(delete_data):
     """
     Authenticate fake user and check they can access a restricted endpoint
     """
@@ -71,28 +85,29 @@ def test_authentication(delete_all_data):
     assert response.status_code == 200
 
 
-def test_authenticated_user_access(delete_all_data):
+@pytest.mark.parametrize("delete_data", [("blogs",)], indirect=True)
+def test_authenticated_user_access(delete_data):
     response = client.get("http://localhost:8000/users/me", headers=get_header())
     assert response.status_code == 200
 
 
-def test_get_all_blogs(delete_all_data):
+def test_get_all_blogs():
     response = client.get('/post/all', headers=get_header())
     assert response.status_code == 200
     assert response.json() == []
 
 
-def test_create_post_without_image(delete_all_data):
+@pytest.mark.parametrize("delete_data", [("blogs",)], indirect=True)
+def test_create_post_without_image(delete_data):
     response = client.post('/post',
-                           json={"user_name": "test name",
-                                 "title": "test title",
+                           json={"title": "test title",
                                  "content": "test content"},
                            headers=get_header())
     assert response.status_code == 200
 
     testable_response = {k:v for k,v in response.json().items() if k not in ['timestamp', 'id', 'image_url']}
 
-    assert testable_response == {"username": "test name",
+    assert testable_response == {"username": user.username,
                                  "title": "test title",
                                  "content": "test content"}
 
@@ -104,7 +119,8 @@ def test_delete_post_without_image(fake_data):
     assert response.status_code == 200
 
 
-def test_create_image(delete_all_data):
+@pytest.mark.parametrize("delete_data", [("blogs",)], indirect=True)
+def test_create_image(delete_data):
 
     with open(os.path.join(PROJECT_DIR,'readme_files/api.png'), 'rb') as f:
 
@@ -116,9 +132,9 @@ def test_create_image(delete_all_data):
     assert response.status_code == 200
 
 
-def test_create_post_with_image(delete_all_data):
-    response = client.post('/post', json={"user_name": "test name",
-                                          "title": "test title",
+@pytest.mark.parametrize("delete_data", [("blogs",)], indirect=True)
+def test_create_post_with_image(delete_data):
+    response = client.post('/post', json={"title": "test title",
                                           "content": "test content",
                                           "image_url": "http://localhost:8000/files/test_api.png"},
                            headers=get_header())
@@ -126,7 +142,7 @@ def test_create_post_with_image(delete_all_data):
 
     testable_response = {k:v for k,v in response.json().items() if k not in ['timestamp', 'id']}
 
-    assert testable_response == {"username": "test name",
+    assert testable_response == {"username": user.username,
                                  "title": "test title",
                                  "content": "test content",
                                  "image_url": "http://localhost:8000/files/test_api.png"}

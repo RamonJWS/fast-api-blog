@@ -21,7 +21,7 @@ router = APIRouter(
 def create_blog_test(request: BlogPost,
                      db: Session = Depends(get_db),
                      current_user: User = Depends(get_current_active_user)):
-    return db_blogs.create_blog(db, request)
+    return db_blogs.create_blog(db, request, current_user.username)
 
 
 @router.post("/post/image")
@@ -60,4 +60,4 @@ def delete_post(id: int,
                 except FileNotFoundError:
                     pass
 
-    return db_blogs.remove_blog(id, db)
+    return db_blogs.remove_blog(id, db, current_user.username)
