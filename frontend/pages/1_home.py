@@ -1,4 +1,5 @@
 import os
+import http
 
 import streamlit as st
 import requests
@@ -13,41 +14,62 @@ from settings import URL
 load_dotenv()
 IP = os.getenv("LOCAL_IP")
 
+# API endpoints
+ALL_BLOGS_ENDPOINT = f'http://{URL}/post/all'
+CREATE_BLOG_ENDPOINT = f'http://{URL}/post'
+ADD_IMAGE_ENDPOINT = f'http://{URL}/post/image'
+DELETE_BLOG_ENDPOINT = f'http://{URL}/post'
+
 
 def get_all_blogs():
-    response = requests.get('http://' + URL + '/post/all', headers=state.header)
-    blog_data = json.loads(response.text)
+    response = requests.get(ALL_BLOGS_ENDPOINT, headers=state.header)
+    if response.status_code == 200:
+        blog_data = json.loads(response.text)
 
-    for blog in blog_data:
-        st.title(blog['title'])
-        if blog['image_url']:
-            st.image(blog['image_url'])
-        st.markdown(f"{blog['content']}")
-        st.markdown(f"Post ID: **{blog['id']}**")
-        st.markdown(f"Username: **{blog['username']}**")
+        for blog in blog_data:
+            st.title(blog['title'])
+            if blog['image_url']:
+                st.image(blog['image_url'])
+            st.markdown(f"{blog['content']}")
+            st.markdown(f"Post ID: **{blog['id']}**")
+            st.markdown(f"Username: **{blog['username']}**")
+    else:
+        st.error(f"Failed to retrieve posts with status code {response.status_code}")
 
 
 def create_new_blog(request_body: Dict) -> int:
     json_body = json.dumps(request_body, indent=4)
-    response = requests.post('http://' + URL + '/post', data=json_body, headers=state.header)
-
-    return response.status_code
+    response = requests.post(CREATE_BLOG_ENDPOINT, data=json_body, headers=state.header)
+    if response.status_code == 200:
+        return response.status_code
+    else:
+        st.error(f"Failed to create post with status code {response.status_code}")
 
 
 def add_image_to_blog(title: str, img) -> str:
     query_params = {"title": title}
     files = {"upload_file": img}
-    response = requests.post('http://' + URL + '/post/image', params=query_params, files=files, headers=state.header)
+    response = requests.post(ADD_IMAGE_ENDPOINT, params=query_params, files=files, headers=state.header)
 
     if response.ok:
         return response.text.replace('"', '')
+    else:
+        st.error(f"Failed to add image to post with status code {response.status_code}")
 
 
-def delete_post(id: int) -> bool:
-    response = requests.delete(f'http://' + URL + f'/post/{id}', headers=state.header)
+def delete_post(id: int):
 
+    try:
+        int(id)
+    except ValueError:
+        st.error("Invalid entry, make sure the ID is an integer.")
+        return
+
+    response = requests.delete(f'{DELETE_BLOG_ENDPOINT}/{id}', headers=state.header)
     if response.status_code == 200:
-        return True
+        st.write(f"Post with ID {delete_id} deleted")
+    elif response.status_code == http.HTTPStatus.NOT_FOUND:
+        st.error(f"Failed to delete post. The post either doesn't exist or you're not the author")
 
 
 # user needs to have logged in before accessing the following resources
@@ -72,7 +94,7 @@ if 'header' in state:
                     data = {
                         "title": input_title,
                         "content": input_content,
-                        "image_url": "http://" + URL + "/" + response_body
+                        "image_url": f"http://{URL}{response_body}"
                     }
 
                 else:
@@ -94,19 +116,7 @@ if 'header' in state:
             submitted = st.form_submit_button("Delete!")
 
             if submitted:
-                try:
-                    if delete_post(int(delete_id)):
-                        st.write(f"Post with ID {delete_id} deleted")
-                    else:
-                        st.write("Failed to delete post:")
-                        st.write("You're either not the creator of the post or the ID doesn't match any of your posts")
-                except ValueError:
-                    st.write("Invalid entry, make sure the ID is a number.")
-
-
-
-
-
+                delete_post(delete_id)
 
     with home:
         get_all_blogs()

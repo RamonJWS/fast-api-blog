@@ -30,9 +30,7 @@ def create_account(username: str, email: str, password: str) -> dict:
     json_body = json.dumps({"username": username, "email": email, "password": password}, indent=4)
     response = requests.post("http://" + URL + "/users/create_account",
                              data=json_body)
-
-    if response.status_code == 200:
-        return response.json()
+    return response.json()
 
 
 def email_validation(email):
@@ -51,7 +49,7 @@ with st.form("Login"):
         if header:
             st.write('**Logged in, you can now access the home page**')
         else:
-            st.write('**Login Failed, incorrect username and or password**')
+            st.error('**Login Failed, incorrect username and or password**')
 
 st.title("Create an Account")
 with st.form("Create Account"):
@@ -63,11 +61,13 @@ with st.form("Create Account"):
     if submit_new_login:
         if new_username and new_email and new_password:
             if email_validation(new_email):
-                account = create_account(new_username, new_email, new_password)
-                if account:
+                response = create_account(new_username, new_email, new_password)
+                if 'detail' in response:
+                    st.error(response['detail'])
+                else:
                     st.write(f'**Account Created for:**')
-                    st.write(f'user: {account["username"]}')
-                    st.write(f'email: {account["email"]}')
+                    st.write(f'user: {response["username"]}')
+                    st.write(f'email: {response["email"]}')
                     authentication_header(new_username, new_password)
             else:
                 st.error("Please enter a valid email.")

@@ -1,5 +1,8 @@
-from sqlalchemy.orm.session import Session
 from datetime import datetime
+
+from sqlalchemy.orm.session import Session
+from sqlalchemy.exc import IntegrityError
+from fastapi import HTTPException
 
 from db.models import DbUser
 from schemas import NewUser
@@ -13,9 +16,12 @@ def create_user(db: Session, request: NewUser):
         password=get_password_hash(request.password),
         created=datetime.utcnow().replace(microsecond=0)
     )
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
+    try:
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+    except IntegrityError:
+        raise HTTPException(status_code=409, detail="Username already exists")
     return new_user
 
 
