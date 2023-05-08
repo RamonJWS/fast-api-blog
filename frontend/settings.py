@@ -1,1 +1,1 @@
-URL = "fast-api-blog-api-1"
+URL = "35.177.193.119:80"

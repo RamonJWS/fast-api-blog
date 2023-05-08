@@ -1,26 +1,36 @@
 [![Automated Testing](https://github.com/RamonJWS/fast-api-blog/actions/workflows/run-tests.yml/badge.svg)](https://github.com/RamonJWS/fast-api-blog/actions/workflows/run-tests.yml)
 
 # About
-**Tech Stack**: Python, FastAPI, EC2, Docker, Streamlit, SqlAlchemy, Sqlite.
+**Tech Stack**: Python, FastAPI, OAuth2, EC2, Docker, Streamlit, SqlAlchemy, Sqlite.
 
 I wanted to create a simple blog post website that allows for users to view all the current blogs,
-post their own blogs and delete blogs. This is a simple learning project and is NOT designed for real
-life applications as there is no authentication or user accounts meaning that anyone can delete any post.
+post their own blogs and delete blogs. To use the site you'll have to create an account.
+
+WARNING: There is currently no filter for NSFW content, this feature is coming soon.
 
 The site can be found here: http://ec2-13-53-56-159.eu-north-1.compute.amazonaws.com/
 
-(note: this site will not remain active as it could be used for inappropriate content.)
-
-![Alt Text](readme_files/demo.gif)
-
 ## Overview
+
+**Login Page**
+
+When you reach the site you'll have to create an account or sign in. When creating an account the password will be 
+encrypted in the database for security, this means that even if you have access to the database you won't be able
+to figure out the password.
+
+Once you create an account it will be automatically authenticated, meaning you don't need to login again for the next
+30 minutes.
+
+Note: you wont be able to access the home page without logging in.
+
+![My Image](readme_files/login_page.png)
 
 **Home Page**
 
 The image below shows the home page for the website, it contains all the current blogs in the database.
 If a new blog is added it will immediately show up here, no need for refreshing.
 
-![My text](readme_files/home_page.png)
+![My Image](readme_files/home_page.png)
 
 **Create Post**
 
@@ -32,7 +42,7 @@ files and their URLs are saved in the `Blogs` table.
 
 **Delete Post**
 
-Posts can be deleted by anyone (hence not production ready), the post id needs to be referenced so the 
+Posts can only be deleted by the person who created them, the post id needs to be referenced so the 
 backend knows what post to delete. When deleting a post a delete image method is also called, this will
 only apply to posts with images.
 
@@ -57,7 +67,7 @@ TablePlus if needed.
 
 ## Improvements:
 
-- Add in async await for concurrent jobs.
-- Add in user accounts and authentication.
-- Only allow creator or admin of blog to delete blog post.
-- Add in inappropriate image and text classifier to remove explicit content.
+- Add DNS and VPC to AWS infrastructure.
+- Add in NSFW text and image classification for unwanted content.
+- Add in update method for posts.
+- Add in upvotes and comments to posts.
