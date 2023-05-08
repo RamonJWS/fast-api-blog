@@ -1,14 +1,14 @@
 [![Automated Testing](https://github.com/RamonJWS/fast-api-blog/actions/workflows/run-tests.yml/badge.svg)](https://github.com/RamonJWS/fast-api-blog/actions/workflows/run-tests.yml)
 
 # About
-**Tech Stack**: Python, FastAPI, OAuth2, EC2, Docker, Streamlit, SqlAlchemy, Sqlite.
+**Tech Stack**: Python, FastAPI, OAuth2, EC2, ECR, Docker, Streamlit, SqlAlchemy, Sqlite.
 
 I wanted to create a simple blog post website that allows for users to view all the current blogs,
 post their own blogs and delete blogs. To use the site you'll have to create an account.
 
 WARNING: There is currently no filter for NSFW content, this feature is coming soon.
 
-The site can be found here: http://ec2-13-53-56-159.eu-north-1.compute.amazonaws.com/
+The site can be found here: http://ec2-13-40-26-62.eu-west-2.compute.amazonaws.com/
 
 ## Overview
 
@@ -67,7 +67,8 @@ TablePlus if needed.
 
 ## Improvements:
 
-- Add DNS and VPC to AWS infrastructure.
+- Add DNS AWS infrastructure.
+- Add in automatic docker image deployment to ECR on commits to main (as long as tests pass).
 - Add in NSFW text and image classification for unwanted content.
 - Add in update method for posts.
 - Add in upvotes and comments to posts.
