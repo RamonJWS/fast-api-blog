@@ -34,6 +34,8 @@ jobs:
     - name: Test backend tests
       env:
         JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
+        AWS_ACCESS_ID: ${{ secrets.AWS_ACCESS_ID }}
+        AWS_SECRET_KEY: ${{ secrets.AWS_SECRET_KEY }}
       run: |
         # run backend tests
         pytest backend/tests/tests.py

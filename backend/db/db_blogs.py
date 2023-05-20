@@ -8,7 +8,7 @@ from datetime import datetime
 
 def create_blog(db: Session, request: BlogPost, username: str):
     new_blog = DbBlog(
-        image_url=request.image_url,
+        image_location=request.image_location,
         username=username,
         title=request.title,
         content=request.content,
@@ -22,10 +22,6 @@ def create_blog(db: Session, request: BlogPost, username: str):
 
 def return_all_blogs(db: Session):
     return db.query(DbBlog).all()
-
-
-def return_all_image_urls(db: Session):
-    return db.query(DbBlog).with_entities(DbBlog.image_url, DbBlog.id).all()
 
 
 def remove_blog(id: int, db: Session, username: str) -> str:

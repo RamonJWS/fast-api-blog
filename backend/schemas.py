@@ -4,14 +4,14 @@ from typing import Optional
 
 
 class BlogPost(BaseModel):
-    image_url: Optional[str]
+    image_location: Optional[str]
     title: str
     content: str
 
 
 class DisplayBlogPost(BaseModel):
     id: int
-    image_url: str | None
+    image_location: str | None
     username: str
     title: str
     content: str

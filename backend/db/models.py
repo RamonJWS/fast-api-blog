@@ -8,7 +8,7 @@ from db.database import Base
 class DbBlog(Base):
     __tablename__ = "blogs"
     id = Column(Integer, primary_key=True, index=True)
-    image_url = Column(String)
+    image_location = Column(String)
     username = Column(String, ForeignKey("users.username"))
     title = Column(String)
     content = Column(String)

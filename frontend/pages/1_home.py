@@ -1,24 +1,32 @@
-import os
 import http
+import boto3
 
 import streamlit as st
 import requests
 import json
 
+from io import BytesIO
+from PIL import Image
 from typing import Dict
-from dotenv import load_dotenv
 from streamlit import session_state as state
 
-from settings import URL
-
-load_dotenv()
-IP = os.getenv("LOCAL_IP")
+from settings import URL, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET_NAME
 
 # API endpoints
 ALL_BLOGS_ENDPOINT = f'http://{URL}/post/all'
 CREATE_BLOG_ENDPOINT = f'http://{URL}/post'
 ADD_IMAGE_ENDPOINT = f'http://{URL}/post/image'
 DELETE_BLOG_ENDPOINT = f'http://{URL}/post'
+
+
+def get_image_from_s3(image_key: str) -> Image:
+    s3 = boto3.client('s3',
+                      aws_access_key_id=AWS_ACCESS_KEY_ID,
+                      aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+                      )
+    response = s3.get_object(Bucket=S3_BUCKET_NAME, Key=image_key)
+    image_data = response['Body'].read()
+    return Image.open(BytesIO(image_data))
 
 
 def get_all_blogs():
@@ -28,8 +36,8 @@ def get_all_blogs():
 
         for blog in blog_data:
             st.title(blog['title'])
-            if blog['image_url']:
-                st.image(blog['image_url'])
+            if blog['image_location']:
+                st.image(get_image_from_s3(blog['image_location']))
             st.markdown(f"{blog['content']}")
             st.markdown(f"Post ID: **{blog['id']}**")
             st.markdown(f"Username: **{blog['username']}**")
@@ -94,7 +102,7 @@ if 'header' in state:
                     data = {
                         "title": input_title,
                         "content": input_content,
-                        "image_url": f"http://{URL}{response_body}"
+                        "image_location": f"{response_body}"
                     }
 
                 else:

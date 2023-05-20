@@ -2,7 +2,6 @@ import pytest
 import os
 
 from fastapi.testclient import TestClient
-from typing import List
 
 from .test_utils import FakeUser
 from settings import ROOT, PROJECT_DIR
@@ -10,10 +9,10 @@ from api import app
 from db.database import SessionLocal
 from db.models import DbBlog, DbUser
 
-automatic_fields = ['timestamp', 'id', 'image_url']
+automatic_fields = ['timestamp', 'id', 'image_location']
 files_dir = os.path.join(ROOT, 'files')
 client = TestClient(app)
-user = FakeUser("a", "a@gmail.com", "a")
+user = FakeUser("test", "test@gmail.com", "a")
 
 
 def get_header():
@@ -105,7 +104,7 @@ def test_create_post_without_image(delete_data):
                            headers=get_header())
     assert response.status_code == 200
 
-    testable_response = {k:v for k,v in response.json().items() if k not in ['timestamp', 'id', 'image_url']}
+    testable_response = {k:v for k,v in response.json().items() if k not in ['timestamp', 'id', 'image_location']}
 
     assert testable_response == {"username": user.username,
                                  "title": "test title",
@@ -134,10 +133,19 @@ def test_create_image(delete_data):
 
 @pytest.mark.parametrize("delete_data", [("blogs",)], indirect=True)
 def test_create_post_with_image(delete_data):
+
+    with open(os.path.join(PROJECT_DIR, 'readme_files/api.png'), 'rb') as f:
+
+        response_image = client.post('/post/image',
+                                     files={'upload_file': ("api.png", f, "image/png")},
+                                     params={"title": "test title"},
+                                     headers=get_header())
+
     response = client.post('/post', json={"title": "test title",
                                           "content": "test content",
-                                          "image_url": "http://localhost:8000/files/test_api.png"},
+                                          "image_location": response_image.text.replace('"', '')},
                            headers=get_header())
+
     assert response.status_code == 200
 
     testable_response = {k:v for k,v in response.json().items() if k not in ['timestamp', 'id']}
@@ -145,4 +153,4 @@ def test_create_post_with_image(delete_data):
     assert testable_response == {"username": user.username,
                                  "title": "test title",
                                  "content": "test content",
-                                 "image_url": "http://localhost:8000/files/test_api.png"}
+                                 "image_location": response_image.text.replace('"', '')}
