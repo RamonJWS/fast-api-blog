@@ -17,4 +17,5 @@ ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
 AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY')
+AWS_REGION = "eu-west-2"
 S3_BUCKET_NAME = "fast-api-blog-images"
