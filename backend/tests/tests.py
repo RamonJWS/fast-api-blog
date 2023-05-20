@@ -121,7 +121,7 @@ def test_delete_post_without_image(fake_data):
 @pytest.mark.parametrize("delete_data", [("blogs",)], indirect=True)
 def test_create_image(delete_data):
 
-    with open(os.path.join(PROJECT_DIR,'readme_files/api.png'), 'rb') as f:
+    with open(os.path.join(PROJECT_DIR, 'readme_files/api.png'), 'rb') as f:
 
         response = client.post('/post/image',
                                files={'upload_file': ("api.png", f, "image/png")},
