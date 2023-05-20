@@ -25,10 +25,9 @@ def create_blog_test(request: BlogPost,
 
 
 @router.post("/post/image")
-def add_image(title: str,
-              upload_file: UploadFile = File(...),
+def add_image(upload_file: UploadFile = File(...),
               current_user: User = Depends(get_current_active_user)):
-    file_name = title.replace(" ", "_") + "_" + upload_file.filename.replace(" ", "_")
+    file_name = current_user.username.lower() + "_" + upload_file.filename.replace(" ", "_")
     path = os.path.join(ROOT, "files", file_name)
 
     # save image locally
@@ -49,8 +48,10 @@ def delete_post(id: int,
                 db: Session = Depends(get_db),
                 current_user: User = Depends(get_current_active_user)):
 
-    # remove post image
     image_urls = db_blogs.return_all_image_urls(db)
+    response = db_blogs.remove_blog(id, db, current_user.username)
+
+    # remove post image
     for url, post_id in image_urls:
         if url:
             if post_id == id:
@@ -60,4 +61,4 @@ def delete_post(id: int,
                 except FileNotFoundError:
                     pass
 
-    return db_blogs.remove_blog(id, db, current_user.username)
+    return response

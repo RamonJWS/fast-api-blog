@@ -28,7 +28,7 @@ def return_all_image_urls(db: Session):
     return db.query(DbBlog).with_entities(DbBlog.image_url, DbBlog.id).all()
 
 
-def remove_blog(id: int, db: Session, username: str):
+def remove_blog(id: int, db: Session, username: str) -> str:
     blog = db.query(DbBlog)\
         .join(DbUser)\
         .filter(DbUser.username == username, DbBlog.id == id)\

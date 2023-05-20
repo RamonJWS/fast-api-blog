@@ -33,9 +33,17 @@ def create_account(username: str, email: str, password: str) -> dict:
     return response.json()
 
 
-def email_validation(email):
+def email_validation(email: str) -> bool:
     pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$'
-    return re.match(pattern, email)
+    if re.match(pattern, email):
+        return True
+    return False
+
+
+def valid_username(name: str) -> bool:
+    if re.match("^\\w+$", name):
+        return True
+    return False
 
 
 st.title("Login Page")
@@ -60,16 +68,19 @@ with st.form("Create Account"):
 
     if submit_new_login:
         if new_username and new_email and new_password:
-            if email_validation(new_email):
-                response = create_account(new_username, new_email, new_password)
-                if 'detail' in response:
-                    st.error(response['detail'])
+            if valid_username(new_username):
+                if email_validation(new_email):
+                    response = create_account(new_username, new_email, new_password)
+                    if 'detail' in response:
+                        st.error(response['detail'])
+                    else:
+                        st.write(f'**Account Created for:**')
+                        st.write(f'user: {response["username"]}')
+                        st.write(f'email: {response["email"]}')
+                        authentication_header(new_username, new_password)
                 else:
-                    st.write(f'**Account Created for:**')
-                    st.write(f'user: {response["username"]}')
-                    st.write(f'email: {response["email"]}')
-                    authentication_header(new_username, new_password)
+                    st.error("Please enter a valid email.")
             else:
-                st.error("Please enter a valid email.")
+                st.error("Usernames can't use special characters")
         else:
             st.error("Please ensure all the fields are filled in.")
