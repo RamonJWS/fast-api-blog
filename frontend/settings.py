@@ -5,8 +5,9 @@ from dotenv import load_dotenv
 
 load_dotenv()
 IP = os.getenv("LOCAL_IP")
-AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')
-AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')
+AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_ID')
+AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY')
+AWS_REGION = "eu-west-2"
 S3_BUCKET_NAME = "fast-api-blog-images"
 
 

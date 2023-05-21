@@ -1,7 +1,7 @@
 [![Automated Testing](https://github.com/RamonJWS/fast-api-blog/actions/workflows/run-tests.yml/badge.svg)](https://github.com/RamonJWS/fast-api-blog/actions/workflows/run-tests.yml)
 
 # About
-**Tech Stack**: Python, FastAPI, OAuth2, EC2, ECR, Docker, Streamlit, SqlAlchemy, Sqlite.
+**Tech Stack**: Python, FastAPI, OAuth2, EC2, ECR, S3, Docker, Streamlit, SqlAlchemy, Sqlite.
 
 I wanted to create a simple blog post website that allows for users to view all the current blogs,
 post their own blogs and delete blogs. To use the site you'll have to create an account.

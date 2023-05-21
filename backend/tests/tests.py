@@ -4,7 +4,7 @@ import os
 from fastapi.testclient import TestClient
 
 from .test_utils import FakeUser
-from settings import ROOT, PROJECT_DIR
+from settings import ROOT, PROJECT_DIR, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID
 from api import app
 from db.database import SessionLocal
 from db.models import DbBlog, DbUser
@@ -59,6 +59,8 @@ def fake_data():
 
 def test_secret_keys():
     assert os.environ.get("JWT_SECRET_KEY").strip() is not None
+    assert os.environ.get("AWS_SECRET_KEY").strip() is not None
+    assert os.environ.get("AWS_ACCESS_ID").strip() is not None
 
 
 @pytest.mark.parametrize("delete_data", [("users", "blogs")], indirect=True)

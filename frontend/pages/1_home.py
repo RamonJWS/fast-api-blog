@@ -10,7 +10,7 @@ from PIL import Image
 from typing import Dict
 from streamlit import session_state as state
 
-from settings import URL, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET_NAME
+from settings import URL, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, S3_BUCKET_NAME, AWS_REGION
 
 # API endpoints
 ALL_BLOGS_ENDPOINT = f'http://{URL}/post/all'
@@ -22,7 +22,8 @@ DELETE_BLOG_ENDPOINT = f'http://{URL}/post'
 def get_image_from_s3(image_key: str) -> Image:
     s3 = boto3.client('s3',
                       aws_access_key_id=AWS_ACCESS_KEY_ID,
-                      aws_secret_access_key=AWS_SECRET_ACCESS_KEY
+                      aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
+                      region_name=AWS_REGION
                       )
     response = s3.get_object(Bucket=S3_BUCKET_NAME, Key=image_key)
     image_data = response['Body'].read()
