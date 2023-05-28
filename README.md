@@ -8,7 +8,7 @@ post their own blogs and delete blogs. To use the site you'll have to create an 
 
 WARNING: There is currently no filter for NSFW content, this feature is coming soon.
 
-The site can be found here: http://ec2-13-40-26-62.eu-west-2.compute.amazonaws.com/
+The site can be found here: http://www.rjwblogs.com/
 
 ## Overview
 
