@@ -1,5 +1,3 @@
-import shutil
-import os
 import boto3
 
 from fastapi import File, UploadFile, Depends, APIRouter
@@ -9,7 +7,7 @@ from typing import List
 from auth.authentication import get_current_active_user
 from schemas import BlogPost, DisplayBlogPost, User
 from db.database import get_db
-from db import db_blogs
+from db import db_blogs, db_ml
 from settings import S3_BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
 from cloud.s3 import S3Bucket
 
@@ -23,6 +21,9 @@ router = APIRouter(
 def create_blog(request: BlogPost,
                 db: Session = Depends(get_db),
                 current_user: User = Depends(get_current_active_user)):
+
+    db_ml.populate(db, request)
+
     return db_blogs.create_blog(db, request, current_user.username)
 
 
