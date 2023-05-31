@@ -10,6 +10,7 @@ from db.database import get_db
 from db import db_blogs, db_ml
 from settings import S3_BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION
 from cloud.s3 import S3Bucket
+from ML.nsfw import MLHandler
 
 
 router = APIRouter(
@@ -22,14 +23,21 @@ def create_blog(request: BlogPost,
                 db: Session = Depends(get_db),
                 current_user: User = Depends(get_current_active_user)):
 
-    db_ml.populate(db, request)
+    context_check = MLHandler()
+    context_check.make_prediction_content(request.content)
 
-    return db_blogs.create_blog(db, request, current_user.username)
+    blogs_response = db_blogs.create_blog(db, request, current_user.username)
+    db_ml.populate(db, request, blogs_response.id, context_check)
+
+    return blogs_response
 
 
 @router.post("/post/image")
 def add_image(upload_file: UploadFile = File(...),
               current_user: User = Depends(get_current_active_user)):
+
+    image_check = MLHandler()
+    image_check.make_prediction_image(upload_file)
 
     s3_client = boto3.client('s3',
                              aws_access_key_id=AWS_ACCESS_KEY_ID,
@@ -37,7 +45,7 @@ def add_image(upload_file: UploadFile = File(...),
                              region_name=AWS_REGION
                              )
     s3_bucket = S3Bucket(client=s3_client, username=current_user.username.lower(), bucket_name=S3_BUCKET_NAME)
-    s3_bucket.save_image(data=upload_file)
+    s3_bucket.save_image(data=upload_file, nsfw_flag=image_check.nsfw)
 
     return s3_bucket.path_on_s3
 
