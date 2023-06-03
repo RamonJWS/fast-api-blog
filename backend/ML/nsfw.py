@@ -12,7 +12,9 @@ class MLHandler:
         pass
 
     def make_prediction_image(self, image: UploadFile) -> None:
+        self.model_type = "Image"
         pass
 
     def make_prediction_content(self, context: str) -> None:
+        self.model_type = "Context"
         pass

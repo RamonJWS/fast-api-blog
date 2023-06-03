@@ -8,12 +8,12 @@ from datetime import datetime
 
 def create_blog(db: Session, request: BlogPost, username: str):
     try:
-        request.image_metadata["path"]
-    except KeyError:
-        request.image_metadata["path"] = None
+        image_location = request.image_metadata["path"]
+    except (KeyError, TypeError):
+        image_location = None
 
     new_blog = DbBlog(
-        image_location=request.image_metadata["path"],
+        image_location=image_location,
         username=username,
         title=request.title,
         content=request.content,

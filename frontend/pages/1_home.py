@@ -4,6 +4,7 @@ import boto3
 import streamlit as st
 import requests
 import json
+import ast
 
 from io import BytesIO
 from PIL import Image
@@ -61,7 +62,7 @@ def add_image_to_blog(title: str, img) -> str:
     response = requests.post(ADD_IMAGE_ENDPOINT, params=query_params, files=files, headers=state.header)
 
     if response.ok:
-        return response.text.replace('"', '')
+        return response.json()
     else:
         st.error(f"Failed to add image to post with status code {response.status_code}")
 
@@ -103,7 +104,7 @@ if 'header' in state:
                     data = {
                         "title": input_title,
                         "content": input_content,
-                        "image_location": f"{response_body}"
+                        "image_metadata": response_body
                     }
 
                 else:
@@ -111,7 +112,7 @@ if 'header' in state:
                         "title": input_title,
                         "content": input_content
                     }
-
+                print(data)
                 status = create_new_blog(data)
                 if status == 200:
                     st.write(f'Posted: {submitted}')

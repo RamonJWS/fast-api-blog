@@ -34,10 +34,13 @@ def create_blog(request: BlogPost,
                    context_check.model_name, context_check.model_type)
 
     try:
-        if request.image_metadata["path"].split("/")[-2] == NSFW_IMAGE_PATH:
+        if request.image_metadata is None:
+            pass
+        elif request.image_metadata["path"].split("/")[-2] == NSFW_IMAGE_PATH:
             request.image_metadata["path"] = CENSORED_IMAGE_PATH
-        db_ml.populate(db_session, blogs_response.id, context_check.prob, context_check.nsfw,
-                       context_check.model_name, context_check.model_type)
+        else:
+            db_ml.populate(db_session, blogs_response.id, context_check.prob, context_check.nsfw,
+                           context_check.model_name, context_check.model_type)
     except AttributeError:
         pass
 
