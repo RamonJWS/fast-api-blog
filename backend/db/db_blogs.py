@@ -7,8 +7,13 @@ from datetime import datetime
 
 
 def create_blog(db: Session, request: BlogPost, username: str):
+    try:
+        request.image_metadata["path"]
+    except KeyError:
+        request.image_metadata["path"] = None
+
     new_blog = DbBlog(
-        image_location=request.image_location,
+        image_location=request.image_metadata["path"],
         username=username,
         title=request.title,
         content=request.content,

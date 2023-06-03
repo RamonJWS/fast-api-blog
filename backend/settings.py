@@ -19,3 +19,5 @@ AWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_ID')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_KEY')
 AWS_REGION = "eu-west-2"
 S3_BUCKET_NAME = "fast-api-blog-images"
+CENSORED_IMAGE_PATH = "censored_content.png"
+NSFW_IMAGE_PATH = "NSFW_Flag"

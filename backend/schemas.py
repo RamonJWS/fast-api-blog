@@ -1,10 +1,10 @@
 from pydantic import BaseModel
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, Any
 
 
 class BlogPost(BaseModel):
-    image_location: Optional[str]
+    image_metadata: Optional[Dict[str, Any]]
     title: str
     content: str
 
@@ -43,6 +43,7 @@ class ResponseUser(BaseModel):
     class Config:
         orm_mode = True
 
+
 class Token(BaseModel):
     access_token: str
     token_type: str
@@ -50,3 +51,12 @@ class Token(BaseModel):
 
 class TokenData(BaseModel):
     username: str | None = None
+
+
+class ImageResponse(BaseModel):
+    path: str
+    nsfw_prob: float
+    nsfw_flag: bool
+    model_name: str
+    class Config:
+        orm_mode = True

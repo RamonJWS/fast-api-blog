@@ -35,6 +35,6 @@ class DbNSFW(Base):
     blog_id = Column(Integer, ForeignKey("blogs.id"))
     nsfw_prob = Column(Float)
     nsfw_flag = Column(Boolean)
-    model_name = Column(String, unique=True)
+    model_name = Column(String)
     model_type = Column(String)
     blog = relationship("DbBlog", back_populates="nsfw")

@@ -15,9 +15,6 @@ app.include_router(blogs.router)
 app.include_router(users.router)
 app.include_router(authentication.router)
 
-static_files_path = os.path.join(ROOT, 'files')
-app.mount(static_files_path, StaticFiles(directory=static_files_path), name='files')
-
 models.Base.metadata.create_all(engine)
 
 if __name__ == "__main__":
