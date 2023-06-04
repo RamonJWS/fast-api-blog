@@ -57,6 +57,18 @@ class ImageResponse(BaseModel):
     path: str
     nsfw_prob: float
     nsfw_flag: bool
-    model_name: str
+    model_version: str
+    model_type: str
     class Config:
         orm_mode = True
+
+
+class BlogResponse(BaseModel):
+    title: str
+    content: str
+    image_location: Optional[str]
+    username: str
+    id: str
+    class Config:
+        orm_mode = True
+

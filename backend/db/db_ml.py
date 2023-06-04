@@ -8,7 +8,7 @@ def populate(db: Session, blog_id: int, probability: float, nsfw_flag: bool, mod
         blog_id=blog_id,
         nsfw_prob=probability,
         nsfw_flag=nsfw_flag,
-        model_name=model_name,
+        model_version=model_name,
         model_type=model_type
     )
     db.add(new_nsfw)

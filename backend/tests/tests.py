@@ -4,7 +4,7 @@ import os
 from fastapi.testclient import TestClient
 
 from .test_utils import FakeUser
-from settings import ROOT, PROJECT_DIR, AWS_SECRET_ACCESS_KEY, AWS_ACCESS_KEY_ID
+from settings import ROOT, PROJECT_DIR
 from api import app
 from db.database import SessionLocal
 from db.models import DbBlog, DbUser
@@ -145,7 +145,7 @@ def test_create_post_with_image(delete_data):
 
     response = client.post('/post', json={"title": "test title",
                                           "content": "test content",
-                                          "image_location": response_image.text.replace('"', '')},
+                                          "image_metadata": response_image.json()},
                            headers=get_header())
 
     assert response.status_code == 200
@@ -155,4 +155,4 @@ def test_create_post_with_image(delete_data):
     assert testable_response == {"username": user.username,
                                  "title": "test title",
                                  "content": "test content",
-                                 "image_location": response_image.text.replace('"', '')}
+                                 "image_location": response_image.json()["path"]}

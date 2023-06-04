@@ -11,17 +11,17 @@ def create_blog(db: Session, request: BlogPost, username: str):
         image_location = request.image_metadata["path"]
     except (KeyError, TypeError):
         image_location = None
-
-    new_blog = DbBlog(
-        image_location=image_location,
-        username=username,
-        title=request.title,
-        content=request.content,
-        timestamp=datetime.utcnow().replace(microsecond=0)
-    )
-    db.add(new_blog)
-    db.commit()
-    db.refresh(new_blog)
+    finally:
+        new_blog = DbBlog(
+            image_location=image_location,
+            username=username,
+            title=request.title,
+            content=request.content,
+            timestamp=datetime.utcnow().replace(microsecond=0)
+        )
+        db.add(new_blog)
+        db.commit()
+        db.refresh(new_blog)
     return new_blog
 
 

@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session
 from typing import List
 
 from auth.authentication import get_current_active_user
-from schemas import BlogPost, DisplayBlogPost, User, ImageResponse
+from schemas import BlogPost, DisplayBlogPost, User, ImageResponse, BlogResponse
 from db.database import get_db
 from db import db_blogs, db_ml
 from settings import (S3_BUCKET_NAME, AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, AWS_REGION, CENSORED_IMAGE_PATH,
@@ -19,7 +19,7 @@ router = APIRouter(
 )
 
 
-@router.post("/post")
+@router.post("/post", response_model=BlogResponse)
 def create_blog(request: BlogPost,
                 db: Session = Depends(get_db),
                 current_user: User = Depends(get_current_active_user)):
@@ -31,7 +31,7 @@ def create_blog(request: BlogPost,
 
     blogs_response = db_blogs.create_blog(db_session, request, current_user.username)
     db_ml.populate(db_session, blogs_response.id, context_check.prob, context_check.nsfw,
-                   context_check.model_name, context_check.model_type)
+                   context_check.model_version, context_check.model_type)
 
     try:
         if request.image_metadata is None:
@@ -39,9 +39,10 @@ def create_blog(request: BlogPost,
         elif request.image_metadata["path"].split("/")[-2] == NSFW_IMAGE_PATH:
             request.image_metadata["path"] = CENSORED_IMAGE_PATH
         else:
-            db_ml.populate(db_session, blogs_response.id, context_check.prob, context_check.nsfw,
-                           context_check.model_name, context_check.model_type)
-    except AttributeError:
+            db_ml.populate(db_session, blogs_response.id, request.image_metadata["nsfw_prob"],
+                           request.image_metadata["nsfw_flag"], request.image_metadata["model_version"],
+                           request.image_metadata["model_type"])
+    except KeyError:
         pass
 
     return blogs_response
@@ -65,7 +66,8 @@ def add_image(upload_file: UploadFile = File(...),
     return {"path": s3_bucket.path_on_s3,
             "nsfw_prob": image_check.prob,
             "nsfw_flag": image_check.nsfw,
-            "model_name": image_check.model_name
+            "model_version": image_check.model_version,
+            "model_type": image_check.model_type
             }
 
 
